@@ -1,1 +1,19 @@
+server:
+  port: 8080
 
+spring:
+  mvc:
+    static-path-pattern: /static/**
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+      write_dates_as_timestamps: false
+    time-zone: GMT+08:00
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  datasource:
+    username: root
+    password: zkxaihxb2
+    url: jdbc:mysql://1.117.144.92:33061/gosling_book_bar
+    driver-class-name: com.mysql.cj.jdbc.Driver
