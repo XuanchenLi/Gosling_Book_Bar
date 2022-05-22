@@ -1,0 +1,167 @@
+<template>
+  <div class="register">
+    <div class="register-warp" style="border-radius: 10px">
+      <el-row type="flex" justify="center">
+        <el-form :model="ruleForm" label-width="auto" status-icon ref="ruleForm" :rules="rules">
+          <h2>管理员注册</h2>
+          <hr>
+          <el-form-item prop="account">
+            <template v-slot:label>
+              <span>账号</span>
+            </template>
+            <el-input v-model="ruleForm.account" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <template v-slot:label>
+              <span>密码</span>
+            </template>
+            <el-input v-model="ruleForm.password" autocomplete="off"
+                      placeholder="密码为6-20位，且同时包含字符和数字"
+                      style="font-size: 10px">
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password2">
+            <template v-slot:label>
+              <span>重复密码</span>
+            </template>
+            <el-input v-model="ruleForm.password2" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item prop="email">
+            <template v-slot:label>
+              <span>邮箱</span>
+            </template>
+            <el-input v-model="ruleForm.email" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item prop="phone">
+            <template v-slot:label>
+              <span>手机号</span>
+            </template>
+            <el-input v-model="ruleForm.phone" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
+          <el-button type="primary" @click="resetForm('ruleForm')">重置</el-button>
+        </el-form>
+      </el-row>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'RegisterView',
+  data () {
+    const validateAccount = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入账号'))
+      } else {
+        if (this.ruleForm.account.trim() === '') {
+          callback(new Error('非法格式'))
+        }
+        callback()
+      }
+    }
+    const validatePassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else if (this.ruleForm.password !== '') {
+        const reg = /^(?!\d+$)(?![a-zA-Z]+$)(?![@$!%*#?&.()]+$)[\dA-Za-z@$!%*#?&￥{}|^~: ;\-=+/\\.()]{6,20}$/
+        if (!reg.test(this.ruleForm.password)) {
+          callback(new Error('密码为6-20位，且同时包含数字和字符'))
+        }
+        callback()
+      }
+    }
+    const validatePassword2 = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请重复输入密码'))
+      } else if (this.ruleForm.password2 !== this.ruleForm.password) {
+        callback(new Error('两次密码不一致'))
+      }
+      callback()
+    }
+    const validateEmail = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入邮箱'))
+      } else {
+        const reg = /^[A-Za-z\d_-]+@[a-zA-Z\d_-]+(\.[a-zA-Z\d_-]+)+$/
+        if (!reg.test(this.ruleForm.email)) {
+          callback(new Error('格式错误'))
+        }
+      }
+    }
+    const validatePhone = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入手机号'))
+      } else {
+        const reg = /^1(3\d|4[01456879]|5[0-35-9]|6[2567]|7[0-8]|8\d|9[0-35-9])\d{8}$/
+        if (!reg.test(this.ruleForm.phone)) {
+          callback(new Error('格式错误'))
+        }
+      }
+    }
+    return {
+      ruleForm: {
+        account: '',
+        password: '',
+        password2: '',
+        email: '',
+        phone: ''
+      },
+      rules: {
+        account: [
+          { validator: validateAccount, trigger: 'blur' }
+        ],
+        password: [
+          { validator: validatePassword, trigger: 'blur' }
+        ],
+        password2: [
+          { validator: validatePassword2, trigger: 'blur' }
+        ],
+        email: [
+          { validator: validateEmail, trigger: 'blur' }
+        ],
+        phone: [
+          { validator: validatePhone, trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  methods: {
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    resetForm (formName) {
+      this.$refs[formName].resetFields()
+    }
+  }
+}
+</script>
+
+<style scoped>
+.register{
+  width: 100%;
+  height: auto;
+  background: url("../assets/login_back.JPG");
+  background-size: cover;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+}
+.register-warp{
+  background-size: cover;
+  width: 400px;
+  height: 500px;
+  margin: 200px auto;
+  overflow: hidden;
+  padding-top: 10px;
+  line-height: 40px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+</style>

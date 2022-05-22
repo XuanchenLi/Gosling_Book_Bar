@@ -9,17 +9,19 @@
         <template v-slot:label>
           <span>账号</span>
         </template>
-        <el-input v-model="ruleForm.account" autocomplete="off"></el-input>
+        <el-input v-model="ruleForm.account" autocomplete="on"></el-input>
       </el-form-item>
       <el-form-item prop="password">
         <template v-slot:label>
           <span>密码</span>
         </template>
-        <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
+        <el-input type="password" v-model="ruleForm.password" autocomplete="off" >
+        </el-input>
       </el-form-item>
       <el-form-item>
+        <p></p>
         <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
-        <el-button >注册</el-button>
+        <el-button type="primary" @click="this.$router.push('/register')">注册</el-button>
       </el-form-item>
     </el-form>
     </el-row>
@@ -35,8 +37,8 @@ export default {
       if (value === '') {
         callback(new Error('请输入账号'))
       } else {
-        if (this.ruleForm.account !== '') {
-          this.$refs.ruleForm.validateField('account')
+        if (this.ruleForm.account.trim() === '') {
+          callback(new Error('非法格式'))
         }
         callback()
       }
@@ -44,9 +46,11 @@ export default {
     const validatePassword = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
-      } else if (value !== this.ruleForm.password) {
-        callback(new Error('两次输入密码不一致!'))
-      } else {
+      } else if (this.ruleForm.password !== '') {
+        const reg = /^(?!\d+$)(?![a-zA-Z]+$)(?![@$!%*#?&.()]+$)[\dA-Za-z@$!%*#?&￥{}|^~:;\-=+/\\.()]{6,20}$/
+        if (!reg.test(this.ruleForm.password)) {
+          callback(new Error('密码为6-20位，且同时包含数字和字符'))
+        }
         callback()
       }
     }
@@ -75,9 +79,6 @@ export default {
           return false
         }
       })
-    },
-    resetForm (formName) {
-      this.$refs[formName].resetFields()
     }
   }
 }
