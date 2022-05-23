@@ -74,12 +74,16 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           alert('submit!')
+          this.$router.push('/home')
         } else {
           console.log('error submit!!')
           return false
         }
       })
     }
+  },
+  mounted: function () {
+    document.title = '登录'
   }
 }
 </script>

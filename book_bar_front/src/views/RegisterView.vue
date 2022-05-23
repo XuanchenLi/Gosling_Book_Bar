@@ -7,33 +7,38 @@
           <hr>
           <el-form-item prop="account">
             <template v-slot:label>
+              <span style="color:red">*</span>
               <span>账号</span>
             </template>
             <el-input v-model="ruleForm.account" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <template v-slot:label>
+              <span style="color:red">*</span>
               <span>密码</span>
             </template>
             <el-input v-model="ruleForm.password" autocomplete="off"
-                      placeholder="密码为6-20位，且同时包含字符和数字"
-                      style="font-size: 10px">
+                      placeholder="6-20位且包含字符和数字"
+                      type="password">
             </el-input>
           </el-form-item>
           <el-form-item prop="password2">
             <template v-slot:label>
+              <span style="color:red">*</span>
               <span>重复密码</span>
             </template>
-            <el-input v-model="ruleForm.password2" autocomplete="off"></el-input>
+            <el-input v-model="ruleForm.password2" type="password" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item prop="email">
             <template v-slot:label>
+              <span style="color:red">*</span>
               <span>邮箱</span>
             </template>
             <el-input v-model="ruleForm.email" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item prop="phone">
             <template v-slot:label>
+              <span style="color:red">*</span>
               <span>手机号</span>
             </template>
             <el-input v-model="ruleForm.phone" autocomplete="off"></el-input>
@@ -42,6 +47,12 @@
           <el-button type="primary" @click="resetForm('ruleForm')">重置</el-button>
         </el-form>
       </el-row>
+      <router-link to="/login"
+                   style="color: cornflowerblue;
+                   float: right; margin-right: 20px"
+      >
+        返回登录
+      </router-link>
     </div>
   </div>
 </template>
@@ -68,6 +79,7 @@ export default {
         if (!reg.test(this.ruleForm.password)) {
           callback(new Error('密码为6-20位，且同时包含数字和字符'))
         }
+        this.$refs.ruleForm.validateField('password2')
         callback()
       }
     }
@@ -88,6 +100,7 @@ export default {
           callback(new Error('格式错误'))
         }
       }
+      callback()
     }
     const validatePhone = (rule, value, callback) => {
       if (value === '') {
@@ -98,6 +111,7 @@ export default {
           callback(new Error('格式错误'))
         }
       }
+      callback()
     }
     return {
       ruleForm: {
@@ -131,8 +145,9 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           alert('submit!')
+          this.$router.push('/login')
         } else {
-          console.log('error submit!!')
+          console.log('格式错误！')
           return false
         }
       })
@@ -140,6 +155,9 @@ export default {
     resetForm (formName) {
       this.$refs[formName].resetFields()
     }
+  },
+  mounted: function () {
+    document.title = '注册'
   }
 }
 </script>
