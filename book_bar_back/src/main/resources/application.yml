@@ -1,9 +1,13 @@
 server:
   port: 8088
+  servlet:
+    context-path: /api
 
 spring:
   mvc:
     static-path-pattern: /static/**
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
   security:
     user:
@@ -58,7 +62,7 @@ spring:
       #配置StatViewServlet
       stat-view-servlet:
         url-pattern: "/druid/*"
-        #允许那些ip
+        #允许哪些ip
         allow:
         login-username: admin
         login-password: zkxaihxb2
@@ -95,4 +99,19 @@ jwt:
     expiration: 604800
     #    jwt负载中拿到的头信息
     tokenHead: Bearer
+
+#配置输出sql语句
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 设置全局主键生成策略
+      id-type: auto
+      # 设置全局表名前缀
+      # table-prefix: sys_
+  # 配置类型别名对应的包
+  type-aliases-package: com.dazzle.book_bar_back.dao.entity
+  # 配置通用枚举路径
+  type-enums-package: com.dazzle.book_bar_back.utils.enums
 

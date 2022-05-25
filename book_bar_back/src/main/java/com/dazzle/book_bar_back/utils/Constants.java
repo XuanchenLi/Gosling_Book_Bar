@@ -11,6 +11,7 @@ public class Constants {
     public static final String  ONE_MINUTE = "ONE_MINUTE";
     public static final String  PERMANENT = "PERMANENT";
     public static final String  THIRTY_MINUTES = "THIRTY_MINUTES";
+    public static final String  ONE_DAY = "ONE_DAY";
 
     /**  1天缓存组  */
     public static final long CACHE_1DAY = 86400;

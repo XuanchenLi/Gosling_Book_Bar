@@ -1,6 +1,6 @@
 package com.dazzle.book_bar_back.response;
 
-import com.dazzle.book_bar_back.utils.ResultCode;
+import com.dazzle.book_bar_back.utils.enums.ResultCode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

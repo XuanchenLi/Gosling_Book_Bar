@@ -1,6 +1,6 @@
 package com.dazzle.book_bar_back.exception;
 
-import com.dazzle.book_bar_back.utils.ResultCode;
+import com.dazzle.book_bar_back.utils.enums.ResultCode;
 import lombok.Data;
 
 /**

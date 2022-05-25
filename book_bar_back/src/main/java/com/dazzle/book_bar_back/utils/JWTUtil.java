@@ -7,10 +7,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.*;
 
 //注册组件
 @Component
@@ -20,119 +24,97 @@ import java.util.Map;
 @Slf4j
 public class JWTUtil {
 
-    //创建对象主体
-    private static final String CLAIM_KEY_USERNAME = "subject";
-    //创建创建时间
-    private static final String CLAIM_KEY_CREATED = "created";
+    //有效期为
+    public static final Long JWT_TTL = 60 * 60 *1000L;// 60 * 60 *1000  一个小时
+    //设置秘钥明文
+    public static final String JWT_KEY = "dazzle";
 
-
-    //@Value这个注解一定要引入spring-boot-starter-validation才能使用
-    //@Value注解可以代替@Data和@ConfigurationProperties结合
-    //这两个二者选一即可
-    //我建议使用@Data和@ConfigurationProperties结合
-    //@Value("${jwt.data.SECRET}")
-    private String SECRET;//创建加密盐
-
-    //过期时间
-    private Long expiration;
-
-    //根据用户名生成token
-    //传入的是使用SpringSecurity里的UserDetails
-    public String createToken(UserDetails userDetails) {
-        HashMap<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
-        claims.put(CLAIM_KEY_CREATED, new Date());
-        return createToken(claims);
+    public static String getUUID(){
+        String token = UUID.randomUUID().toString().replaceAll("-", "");
+        return token;
     }
 
-    //根据token获取用户名
-    public String getUsernameFromToken(String token) {
-        String username = "";
-        try {
-            Claims claims = getClaimsFromToken(token);
-            username = claims.getSubject();
-        } catch (Exception e) {
-            username = null;
-            log.info("error:{}", "用户名未能获取 from token");
+    /**
+     * 生成jtw
+     * @param subject token中要存放的数据（json格式）
+     * @return
+     */
+    public static String createJWT(String subject) {
+        JwtBuilder builder = getJwtBuilder(subject, null, getUUID());// 设置过期时间
+        return builder.compact();
+    }
+
+    /**
+     * 生成jtw
+     * @param subject token中要存放的数据（json格式）
+     * @param ttlMillis token超时时间
+     * @return
+     */
+    public static String createJWT(String subject, Long ttlMillis) {
+        JwtBuilder builder = getJwtBuilder(subject, ttlMillis, getUUID());// 设置过期时间
+        return builder.compact();
+    }
+
+    private static JwtBuilder getJwtBuilder(String subject, Long ttlMillis, String uuid) {
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        SecretKey secretKey = generalKey();
+        long nowMillis = System.currentTimeMillis();
+        Date now = new Date(nowMillis);
+        if(ttlMillis==null){
+            ttlMillis=JWTUtil.JWT_TTL;
         }
-        return username;
-    }
-
-    //从token中获取荷载
-    private Claims getClaimsFromToken(String token) {
-        Claims claims = null;
-        try {
-            claims = Jwts.parser()
-                    .setSigningKey(SECRET)
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (ExpiredJwtException e) {
-            e.printStackTrace();
-        } catch (UnsupportedJwtException e) {
-            e.printStackTrace();
-        } catch (MalformedJwtException e) {
-            e.printStackTrace();
-        } catch (SignatureException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        return claims;
-    }
-
-
-    //根据负载生成jwt token
-    private String createToken(Map<String, Object> claims) {
-        //jjwt构建jwt builder
-        //设置信息，过期时间，signnature
+        long expMillis = nowMillis + ttlMillis;
+        Date expDate = new Date(expMillis);
         return Jwts.builder()
-                .setClaims(claims)
-                .setExpiration(expirationDate())
-                .signWith(SignatureAlgorithm.ES512, SECRET)
-                .compact();
+                .setId(uuid)              //唯一的ID
+                .setSubject(subject)   // 主题  可以是JSON数据
+                .setIssuer("sg")     // 签发者
+                .setIssuedAt(now)      // 签发时间
+                .signWith(signatureAlgorithm, secretKey) //使用HS256对称加密算法签名, 第二个参数为秘钥
+                .setExpiration(expDate);
     }
 
-    //生成token失效时间
-    private Date expirationDate() {
-        //失效时间为：系统当前毫秒数+我们设置的时间（s）*1000=》毫秒
-        //其实就是未来7天
-        return new Date(System.currentTimeMillis() + expiration * 1000);
+    /**
+     * 创建token
+     * @param id
+     * @param subject
+     * @param ttlMillis
+     * @return
+     */
+    public static String createJWT(String id, String subject, Long ttlMillis) {
+        JwtBuilder builder = getJwtBuilder(subject, ttlMillis, id);// 设置过期时间
+        return builder.compact();
     }
 
-    //判断token是否有效
-    public boolean validateToken(String token, UserDetails userDetails) {
-        //判断token是否过期
-        //判断token是否和userDetails中的一致
-        //我们要做的 是先获取用户名
-        String username = getUsernameFromToken(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public static void main(String[] args) throws Exception {
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJjYWM2ZDVhZi1mNjVlLTQ0MDAtYjcxMi0zYWEwOGIyOTIwYjQiLCJzdWIiOiJzZyIsImlzcyI6InNnIiwiaWF0IjoxNjM4MTA2NzEyLCJleHAiOjE2MzgxMTAzMTJ9.JVsSbkP94wuczb4QryQbAke3ysBDIL5ou8fWsbt_ebg";
+        Claims claims = parseJWT(token);
+        System.out.println(claims);
     }
 
-    //判断token、是否失效
-    //失效返回true
-    private boolean isTokenExpired(String token) {
-        Date expiredDate = getExpiredDateFeomToken(token);
-        return expiredDate.before(new Date());
+    /**
+     * 生成加密后的秘钥 secretKey
+     * @return
+     */
+    public static SecretKey generalKey() {
+        byte[] encodedKey = Base64.getDecoder().decode(JWTUtil.JWT_KEY);
+        SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+        return key;
     }
 
-    //从荷载中获取时间
-    private Date getExpiredDateFeomToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getExpiration();
-    }
-
-    //判断token是否可以被刷新
-    //过期（销毁）就可以
-    public boolean canBeRefreshed(String token){
-        return !isTokenExpired(token);
-    }
-
-    //刷新token
-    public String refreshToken(String token){
-        Claims claims = getClaimsFromToken(token);
-        //修改为当前时间
-        claims.put(CLAIM_KEY_CREATED,new Date());
-        return createToken(claims);
+    /**
+     * 解析
+     *
+     * @param jwt
+     * @return
+     * @throws Exception
+     */
+    public static Claims parseJWT(String jwt) throws Exception {
+        SecretKey secretKey = generalKey();
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(jwt)
+                .getBody();
     }
 
 }

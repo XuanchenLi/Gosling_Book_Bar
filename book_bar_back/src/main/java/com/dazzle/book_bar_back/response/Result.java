@@ -1,6 +1,6 @@
 package com.dazzle.book_bar_back.response;
 
-import com.dazzle.book_bar_back.utils.ResultCode;
+import com.dazzle.book_bar_back.utils.enums.ResultCode;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @Author:Dazz1e
  * @Date:2022/5/22 下午 4:53
  * Version V1.0
-     * https://juejin.cn/post/7002926832160866318#heading-2
+ * https://juejin.cn/post/7002926832160866318#heading-2
  */
 @Data
 public class Result<T> implements Serializable {

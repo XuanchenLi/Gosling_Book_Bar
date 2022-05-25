@@ -10,14 +10,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.naming.AuthenticationException;
 import java.util.List;
 
-import static com.dazzle.book_bar_back.utils.ResultCode.*;
+import static com.dazzle.book_bar_back.utils.enums.ResultCode.*;
 
 /**
  * @ClassName:GlobalExceptionHandler
@@ -85,7 +84,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
     public ErrorResult handleAuthenticationException(AuthenticationException e) {
-        return ErrorResult.error(AUTHENTICATION_ERROR, "登陆状况异常");
+        return ErrorResult.error(AUTHENTICATION_ERROR, e.getMessage());
     }
 
 

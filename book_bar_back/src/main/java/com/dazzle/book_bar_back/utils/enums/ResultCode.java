@@ -1,4 +1,4 @@
-package com.dazzle.book_bar_back.utils;
+package com.dazzle.book_bar_back.utils.enums;
 
 public enum ResultCode {
     /* 成功状态码 */

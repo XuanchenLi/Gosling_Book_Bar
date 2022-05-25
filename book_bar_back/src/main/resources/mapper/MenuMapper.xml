@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dazzle.book_bar_back.dao.mapper.MenuMapper">
+    <select id="selectPermByUserId" resultType="java.lang.String">
+        SELECT
+            DISTINCT m.`perm`
+        FROM
+            sys_employee_role as er
+            LEFT JOIN sys_role r ON er.`role_id` = r.`id`
+            LEFT JOIN sys_role_menu rm ON er.`role_id` = rm.`role_id`
+            LEFT JOIN sys_menu m ON m.`id` = rm.`menu_id`
+        WHERE
+            er.employee_id = #{userId}
+            AND r.`del_flag` = 0
+            AND m.`del_flag` = 0
+    </select>
+</mapper>
