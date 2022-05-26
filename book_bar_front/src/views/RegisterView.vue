@@ -5,12 +5,12 @@
         <el-form :model="ruleForm" label-width="auto" status-icon ref="ruleForm" :rules="rules">
           <h2>管理员注册</h2>
           <hr>
-          <el-form-item prop="account">
+          <el-form-item prop="username">
             <template v-slot:label>
               <span style="color:red">*</span>
               <span>账号</span>
             </template>
-            <el-input v-model="ruleForm.account" autocomplete="off"></el-input>
+            <el-input v-model="ruleForm.username" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <template v-slot:label>
@@ -43,7 +43,7 @@
             </template>
             <el-input v-model="ruleForm.phone" autocomplete="off"></el-input>
           </el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">注册</el-button>
+          <el-button type="primary" @click="register('ruleForm')">注册</el-button>
           <el-button type="primary" @click="resetForm('ruleForm')">重置</el-button>
         </el-form>
       </el-row>
@@ -58,14 +58,17 @@
 </template>
 
 <script>
+import { registerAPI } from '@/api/login'
+import storage from '@/utils/storage'
+
 export default {
   name: 'RegisterView',
   data () {
-    const validateAccount = (rule, value, callback) => {
+    const validateUsername = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入账号'))
       } else {
-        if (this.ruleForm.account.trim() === '') {
+        if (this.ruleForm.username.trim() === '') {
           callback(new Error('非法格式'))
         }
         callback()
@@ -115,15 +118,15 @@ export default {
     }
     return {
       ruleForm: {
-        account: '',
+        username: '',
         password: '',
         password2: '',
         email: '',
         phone: ''
       },
       rules: {
-        account: [
-          { validator: validateAccount, trigger: 'blur' }
+        username: [
+          { validator: validateUsername, trigger: 'blur' }
         ],
         password: [
           { validator: validatePassword, trigger: 'blur' }
@@ -141,11 +144,32 @@ export default {
     }
   },
   methods: {
-    submitForm (formName) {
+    register (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!')
-          this.$router.push('/login')
+          const account = {
+            username: this.ruleForm.username,
+            password: this.ruleForm.password,
+            email: this.ruleForm.email,
+            phone: this.ruleForm.phone
+          }
+          registerAPI(account).then(
+            (res) => {
+              let data = res.data
+              if (data.success) {
+                this.$message.success('注册成功')
+                this.$router.push('/login')
+              }else {
+                this.$message.error(data.message)
+              }
+            }
+          ).catch(
+            (error) => {
+              this.$message.error(error.message)
+              // console.log(error)
+              return false
+            }
+          )
         } else {
           console.log('格式错误！')
           return false

@@ -11,7 +11,7 @@ public enum ResultCode {
     AUTHENTICATION_ERROR(401, "登录状况异常"),
     ACCESS_DENIED(403, "权限不足"),
     /* 业务状态码 */
-    USER_NOT_EXIST_ERROR(10001, "用户不存在"),
+    USER_NOT_EXIST_ERROR(10001, "用户名或密码错误"),
    ;
 
     private Integer code;

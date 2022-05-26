@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @JsonIgnoreProperties(
         {"enabled", "accountNonExpired", "accountNonLocked",
-                "credentialsNonExpired", "authorities",
+                "credentialsNonExpired",
                 "password", "username"
         }
                 )

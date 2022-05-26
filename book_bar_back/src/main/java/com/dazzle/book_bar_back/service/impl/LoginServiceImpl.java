@@ -12,6 +12,7 @@ import com.dazzle.book_bar_back.service.LoginService;
 import com.dazzle.book_bar_back.utils.Constants;
 import com.dazzle.book_bar_back.utils.JWTUtil;
 import com.dazzle.book_bar_back.utils.RedisUtil;
+import com.dazzle.book_bar_back.utils.enums.ResultCode;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
@@ -51,7 +52,7 @@ public class LoginServiceImpl implements LoginService {
         );
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         if (Objects.isNull(authentication)) {
-            throw new AuthenticationException("用户名或密码错误");
+            throw new BaseException(ResultCode.USER_NOT_EXIST_ERROR);
         }
         //id生成token
         LoginEmployee loginEmployee = (LoginEmployee) authentication.getPrincipal();
