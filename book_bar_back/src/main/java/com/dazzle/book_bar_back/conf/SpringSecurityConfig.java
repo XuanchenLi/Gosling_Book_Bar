@@ -46,7 +46,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
-                .antMatchers("/employee/login", "/druid/**").anonymous()
+                .antMatchers("/employee/login", "/druid/**", "/employee/register").anonymous()
                 .anyRequest().authenticated();
 
         //把token校验过滤器添加到过滤器链中

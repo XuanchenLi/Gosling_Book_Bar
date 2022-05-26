@@ -7,4 +7,5 @@ import org.apache.tomcat.websocket.AuthenticationException;
 public interface LoginService {
     public String login(Employee employee) throws AuthenticationException;
     public String logout();
+    public String register(Employee employee);
 }

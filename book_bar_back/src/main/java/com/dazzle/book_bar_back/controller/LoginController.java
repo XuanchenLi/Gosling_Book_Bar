@@ -42,4 +42,10 @@ public class LoginController {
     public String logout(){
         return loginService.logout();
     }
+
+    @ResponseResult
+    @PostMapping("/employee/register")
+    public String register(@RequestBody Employee employee) {
+        return loginService.register(employee);
+    }
 }
