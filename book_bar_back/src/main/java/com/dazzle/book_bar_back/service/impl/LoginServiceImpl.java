@@ -24,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -94,6 +95,7 @@ public class LoginServiceImpl implements LoginService {
             throw new BaseException("无效邮箱");
         BCryptPasswordEncoder crypt = new BCryptPasswordEncoder();
         employee.setPassword(crypt.encode(employee.getPassword()));
+        employee.setStartDate(new Date());
         int res = employeeMapper.insert(employee);
         return res == 0 ? "注册失败" : "注册成功";
     }

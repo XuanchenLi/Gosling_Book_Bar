@@ -27,6 +27,7 @@ service.interceptors.request.use(config => {
   //}
   if (store.state.token) {
     config.headers.Authorization = store.getters.get_token;
+    // console.log(config.headers.Authorization)
   }
   return config
 }, error => {
@@ -92,7 +93,7 @@ service.interceptors.response.use(response => {
     error.$message = '连接服务器失败'
   }
 
-  ElMessage.error(error.$message)
+  // ElMessage.error(error.$message)
   /***** 处理结束 *****/
   //如果不需要错误处理，以上的处理过程都可省略
   return Promise.resolve(error.response)

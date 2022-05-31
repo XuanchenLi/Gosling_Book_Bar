@@ -7,6 +7,7 @@ import com.dazzle.book_bar_back.dao.entity.LoginEmployee;
 import com.dazzle.book_bar_back.dao.mapper.EmployeeMapper;
 import com.dazzle.book_bar_back.dao.mapper.MenuMapper;
 import com.dazzle.book_bar_back.exception.BaseException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +25,7 @@ import java.util.Objects;
  * Version V1.0
  */
 @Service
+@Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -34,6 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Employee::getUsername, username);
         Employee employee = employeeMapper.selectOne(queryWrapper);
+        // log.info(username);
         if (Objects.isNull(employee)) {
             throw new BaseException("用户名或密码错误");
         }

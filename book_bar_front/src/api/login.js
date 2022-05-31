@@ -6,8 +6,8 @@ import http from '@/utils/http'
  */
 let request = "/testIp/"
 
-export function loginAPI (params) {
-  return http.post(`${request}/employee/login`, params)
+export function loginAPI (data) {
+  return http.post(`${request}/employee/login`, data)
 }
 
 export function registerAPI (params) {

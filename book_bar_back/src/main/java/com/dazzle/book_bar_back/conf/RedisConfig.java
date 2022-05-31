@@ -124,7 +124,6 @@ public class RedisConfig extends CachingConfigurerSupport {
         configMap.put(Constants.PERMANENT, config);//永久
         configMap.put(Constants.ONE_DAY, config.entryTtl(Duration.ofSeconds(Constants.CACHE_1DAY)));
 
-
         //需要先初始化缓存名称，再初始化其它的配置。
         RedisCacheManager cacheManager = RedisCacheManager.builder(factory).initialCacheNames(cacheNames).withInitialCacheConfigurations(configMap).build();
 

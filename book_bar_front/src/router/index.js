@@ -5,6 +5,11 @@ import RegisterView from '@/views/RegisterView'
 import storage from '@/utils/storage'
 import store from '@/store'
 import SearchEmployeeView from '@/views/SearchEmployeeView'
+import AuthView from '@/views/AuthView'
+import DeparmentView from '@/views/DepartmentView'
+import ProfitView from '@/views/ProfitView'
+import SalaryView from '@/views/SalaryView'
+import AccountControlView from '@/views/AccountControlView'
 
 const routes = [
   {
@@ -33,8 +38,51 @@ const routes = [
       {
         path: 'searchEmployee',
         name: 'searchEmployee',
-        component: SearchEmployeeView
-      }
+        component: SearchEmployeeView,
+        meta: {
+          requireAuth: true
+        }
+      },
+      {
+        path: 'authority',
+        name: 'authority',
+        component: AuthView,
+        meta: {
+          requireAuth: true
+        },
+      },
+      {
+        path: 'department',
+        name: 'department',
+        component: DeparmentView,
+        meta: {
+          requireAuth: true
+        }
+      },
+      {
+        path: 'profit',
+        name: 'profit',
+        component: ProfitView,
+        meta: {
+          requireAuth: true
+        }
+      },
+      {
+        path: 'salary',
+        name: 'salary',
+        component: SalaryView,
+        meta: {
+          requireAuth: true
+        }
+      },
+      {
+        path: 'accountControl',
+        name: 'accountControl',
+        component: AccountControlView,
+        meta: {
+          requireAuth: true
+        }
+      },
     ]
   }
 ]

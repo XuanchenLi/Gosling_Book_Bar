@@ -4,6 +4,7 @@ import com.dazzle.book_bar_back.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 /**
  * @ClassName:SpringSecurityConfig
@@ -45,8 +47,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 // 对于登录接口 允许匿名访问
-                .antMatchers("/employee/login", "/druid/**", "/employee/register").anonymous()
+                .antMatchers("/employee/login", "/druid/**", "/employee/register").permitAll()
                 .anyRequest().authenticated();
 
         //把token校验过滤器添加到过滤器链中
@@ -58,9 +61,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         //允许跨域
         http.cors();
-
-
-
     }
 
     @Bean

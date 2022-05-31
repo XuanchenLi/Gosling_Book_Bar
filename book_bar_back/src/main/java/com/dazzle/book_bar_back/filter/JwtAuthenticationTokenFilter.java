@@ -17,6 +17,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Console;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -35,7 +36,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private RedisUtil redisUtil;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("token");
+        String method = request.getMethod();
+        if(method.equals("OPTIONS")){
+            filterChain.doFilter(request, response);
+            return;
+        }
+        String token = request.getHeader("Authorization");
+        String path = request.getServletPath();
+        if (path.equals("/employee/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (!StringUtils.hasText(token)) {
             // 白名单放行
             filterChain.doFilter(request, response);
@@ -43,6 +54,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
         String userId;
         try {
+            logger.info(token);
             Claims claims = JWTUtil.parseJWT(token);
             userId = claims.getSubject();
         } catch (Exception e){

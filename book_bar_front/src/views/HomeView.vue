@@ -1,4 +1,5 @@
 <template>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" />
   <div class="home" style="height: 600px; background-color: #f3f4f7">
     <el-container class="main-header">
       <el-header style="text-align: right; font-size: 12px">
@@ -35,14 +36,15 @@
     <el-container class="main-side-bar" >
       <el-aside width="200px" style="overflow: hidden;" >
         <el-scrollbar height="500px">
-          <el-menu :default-openeds="['1']">
+          <el-menu :default-openeds="['1']"
+                   :default-active="this.$router.path"
+                   :router="true">
             <el-submenu index="1">
               <template #title>
                 <el-icon><user /></el-icon>&ensp;员工管理
               </template>
-              <el-menu-item index="1-1">员工查询</el-menu-item>
-              <el-menu-item index="1-2">部门管理</el-menu-item>
-              <el-menu-item index="1-3">岗位调度</el-menu-item>
+              <el-menu-item index="/home/searchEmployee">员工管理</el-menu-item>
+              <el-menu-item index="/home/department">部门管理</el-menu-item>
             </el-submenu>
             <el-submenu index="2">
               <template #title>
@@ -50,19 +52,19 @@
               </template>
               <el-menu-item-group>
                 <template #title>财务统计</template>
-                <el-menu-item index="2-1">盈利统计</el-menu-item>
-                <el-menu-item index="2-2">工资统计</el-menu-item>
+                <el-menu-item index="/home/profit">盈利统计</el-menu-item>
+                <el-menu-item index="/home/salary">工资统计</el-menu-item>
               </el-menu-item-group>
               <el-menu-item-group title="员工工资">
-                <el-menu-item index="2-3">工资查询</el-menu-item>
+                <el-menu-item index="/home">工资查询</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
             <el-submenu index="3">
               <template #title>
                 <el-icon><setting /></el-icon>&ensp;系统管理
               </template>
-              <el-menu-item index="3-1">账号控制</el-menu-item>
-              <el-menu-item index="3-2">权限控制</el-menu-item>
+              <el-menu-item index="/home/accountControl">账号控制</el-menu-item>
+              <el-menu-item index="/home/authority">权限控制</el-menu-item>
             </el-submenu>
           </el-menu>
         </el-scrollbar>

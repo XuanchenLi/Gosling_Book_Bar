@@ -2,7 +2,7 @@
   <div class="LoginView">
     <div class="login-warp" style="border-radius: 10px">
     <el-row type="flex" justify="center">
-    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm">
+    <el-form v-loading="isload" :model="ruleForm" status-icon :rules="rules" ref="ruleForm">
       <h2>管理员登录</h2>
       <hr>
       <el-form-item prop="account">
@@ -41,6 +41,7 @@ export default {
   name: 'LoginView',
   data () {
     return {
+      isload: false,
       rememberMe: false,
       ruleForm: {
         account: '',
@@ -90,6 +91,7 @@ export default {
             username: this.ruleForm.account,
             password: this.ruleForm.password
           }
+          this.isload = true
           loginAPI(account).then(
             (res) => {
               console.log(res.data);
@@ -107,12 +109,13 @@ export default {
               }else {
                 this.$message.error(data.message)
               }
+              this.isload = false
             }
           ).catch(
             (error) => {
               this.$message.error(error.message)
               // console.log(error)
-              return false
+              this.isload = false
             }
           )
         } else {
