@@ -26,6 +26,7 @@ public class BasicEmployee {
     private Date startDate;
     @JSONField(format="yyyy-MM-dd")
     private Date endDate;
+    private Integer status;
 
     public BasicEmployee (Employee employee) {
         id = employee.getId();
@@ -33,5 +34,6 @@ public class BasicEmployee {
         sex = employee.getSex();
         startDate = employee.getStartDate();
         endDate = employee.getEndDate();
+        status = employee.getStatus();
     }
 }

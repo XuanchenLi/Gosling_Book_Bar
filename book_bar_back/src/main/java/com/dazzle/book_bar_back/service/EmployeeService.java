@@ -19,4 +19,10 @@ public interface EmployeeService extends IService<Employee> {
     boolean addPosition(Long eId, Long pId);
 
     List<AllocateHistoryResponse> selectAllocateHistory(Long id);
+
+    boolean editProfile(Employee employee);
+
+    boolean changePassword(String oldPassword, String newPassword);
+
+
 }

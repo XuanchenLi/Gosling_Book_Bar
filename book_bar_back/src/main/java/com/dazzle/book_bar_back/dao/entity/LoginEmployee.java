@@ -1,6 +1,7 @@
 package com.dazzle.book_bar_back.dao.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,15 +25,17 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(
-        {"enabled", "accountNonExpired", "accountNonLocked",
+        value = {"enabled", "accountNonExpired", "accountNonLocked",
                 "credentialsNonExpired",
                 "password", "username"
-        }
+        }, ignoreUnknown = true
                 )
+
 public class LoginEmployee implements UserDetails {
     private Employee employee;
     private List<String> permissions;
-    @JSONField(serialize = false)
+    //@JSONField(serialize = false)
+    @JsonIgnore
     private List<SimpleGrantedAuthority> authorities;
 
     public LoginEmployee (Employee e, List<String> p) {

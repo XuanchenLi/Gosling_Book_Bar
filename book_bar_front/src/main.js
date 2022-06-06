@@ -7,6 +7,7 @@ import axios from 'axios'
 import ElementPlus from 'element-plus'
 import 'element-plus'
 
+
 const app = createApp(App)
 installElementPlus(app)
 app.use(ElementPlus).use(store).use(router).mount('#app')

@@ -15,8 +15,12 @@
     "core-js": "^3.8.3",
     "echarts": "^5.3.2",
     "element-plus": "^1.0.2-beta.28",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
     "vue": "^3.2.13",
+    "vue-easy-printer": "^1.0.6",
     "vue-router": "^4.0.3",
+    "vue-to-pdf": "^1.0.0",
     "vuex": "^4.0.0"
   },
   "devDependencies": {

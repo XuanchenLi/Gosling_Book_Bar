@@ -20,3 +20,13 @@ export function addEmployeePositionAPI(id, pId) {
 export function getEmployeeAllocateHistory(id) {
   return http.get(`${request}/employee/allocate_history/${id}`)
 }
+
+export function getProfile() {
+  return http.get(`${request}/employee/profile`)
+}
+
+export function editProfile(data) {
+  return http.post(`${request}/employee/edit_profile`, data)
+}
+
+

@@ -126,7 +126,6 @@ import {
   updatePositionAPI, getPositionInfoAPI, saveOrUpdatePositionAPI
 } from '@/api/position'
 import { loginAPI } from '@/api/login'
-import storage from '@/utils/storage'
 
 const formLabelWidth = '140px'
 
@@ -263,7 +262,7 @@ export default {
       this.posForm.id = 0
       this.posForm.name = ""
       this.posForm.father_id = father_id
-      console.log(this.$refs['depForm'])
+      //console.log(this.$refs['depForm'])
     },
     deletePosition(father_id, id, event) {
       event.stopPropagation();

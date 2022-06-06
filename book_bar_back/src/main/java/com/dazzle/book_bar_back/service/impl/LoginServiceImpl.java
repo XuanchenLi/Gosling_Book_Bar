@@ -83,10 +83,12 @@ public class LoginServiceImpl implements LoginService {
         if (Objects.isNull(employee.getUsername()) || Objects.equals(employee.getUsername().trim(), ""))
             throw new BaseException("无效用户名");
         LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
+
         queryWrapper.eq(Employee::getUsername, employee.getUsername());
         int num = employeeMapper.selectCount(queryWrapper);
         if (num!=0)
             throw new BaseException("用户已存在");
+
         if (!Pattern.matches(pswReg, employee.getPassword()))
             throw new BaseException("密码格式错误");
         if (!Pattern.matches(phoneReg, employee.getPhone()))

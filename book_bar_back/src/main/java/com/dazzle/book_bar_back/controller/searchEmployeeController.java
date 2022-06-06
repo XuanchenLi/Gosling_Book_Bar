@@ -10,6 +10,7 @@ import com.dazzle.book_bar_back.service.EmployeeService;
 import com.dazzle.book_bar_back.service.SearchEmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class searchEmployeeController {
     private EmployeeService employeeService;
 
     @PostMapping("/search/employee")
+    @PreAuthorize("hasAuthority('employee::list')")
     @ResponseResult
     public SearchEmployeeResponse searchEmployee(@RequestBody SearchEmployeeBag bag) {
         Page<Employee> page = searchEmployeeService.search(bag);
@@ -49,12 +51,14 @@ public class searchEmployeeController {
     }
 
     @PostMapping("/search/employee/recommend")
+    @PreAuthorize("hasAuthority('employee::list')")
     @ResponseResult
     public List<String> getRecommend(@RequestBody SearchEmployeeBag bag) {
         return searchEmployeeService.recommend(bag);
     }
 
     @GetMapping("/search/employee/{id}")
+    @PreAuthorize("hasAuthority('employee::list')")
     @ResponseResult
     public Employee getEmployeeInfo(@PathVariable("id") Long id) {
         return employeeService.getById(id);

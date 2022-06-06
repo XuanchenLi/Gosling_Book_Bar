@@ -90,16 +90,17 @@
           border
           default-expand-all
         >
-          <el-table-column prop="id" align="center" label="编号" sortable width="70" />
-          <el-table-column prop="name" align="center" label="姓名" sortable />
-          <el-table-column prop="sex" align="center" label="性别" sortable />
-          <el-table-column prop="startDate" align="center" label="入职日期" sortable />
-          <el-table-column prop="endDate" align="center" label="离职日期" sortable />
-          <el-table-column align="center" label="操作" width="200" >
+          <el-table-column prop="id" align="center" label="编号"  width="70" />
+          <el-table-column prop="name" align="center" label="姓名"  />
+          <el-table-column prop="sex" align="center" label="性别"  />
+          <el-table-column prop="startDate" align="center" label="入职日期"  />
+          <el-table-column prop="endDate" align="center" label="离职日期"  />
+          <el-table-column align="center" label="操作" width="300px" >
             <template #default="scope">
-              <el-button size="small" type="warning" :disabled="this.tableData[scope.$index].endDate !== null"
+              <el-button size="small" type="warning" :disabled="this.tableData[scope.$index].status !== 0"
                          @click="allocate(scope.$index, $event)">岗位调度</el-button>
               <el-button size="small" type="primary" @click="viewInfo(scope.$index, $event)">查看信息</el-button>
+              <el-button size="small" type="success" @click="controlAccount(scope.$index, $event)">账号控制</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -194,16 +195,14 @@
     >
       <div v-loading="this.infoLoad">
       <el-row>
-        <el-col class="avatar" :span="8" :offset="2">
-          <el-image>
-            <template #error>
-              <div class="image-slot">
-                <el-icon><Avatar /></el-icon>
-              </div>
+        <el-col :span="6" :offset="2">
+          <el-avatar :size="150" :src="this.baseUrl + this.avatar">
+            <template  #default>
+              <el-icon style="font-size: 80px; padding-top: 30px" ><UserFilled/></el-icon>
             </template>
-          </el-image>
+          </el-avatar>
         </el-col>
-        <el-col  :span="12" class="info" :offset="2">
+        <el-col style="padding-left: 20px" :span="12" class="info" :offset="2">
           <div>
             <el-row>
               <h2 style="float:left;">账户名：{{this.username}}</h2>
@@ -325,33 +324,118 @@
       </el-row>
 
     </el-dialog>
+    <!-- -->
+    <el-dialog v-model="openACDialog" title="账号控制">
+      <el-row style="margin-bottom: 20px">
+        <el-col  :span="12" class="info" >
+          <div>
+            <el-row>
+              <h2 style="float:left;">账户名：{{this.username}}</h2>
+            </el-row>
+            <el-row>
+              <h3 >编号：{{this.id}}</h3>
+            </el-row>
+          </div>
+        </el-col>
+        <el-col :span="12">
+          <el-row>
+            <div style="height: 40px"></div>
+          </el-row>
+          <el-row>
+            <el-col :span="24" style="margin-right: 0">
+              <el-button type="danger" style="width: 100px;height: 30px; float: right">
+                <span style="font-size: 15px">删除账号</span>
+              </el-button>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+      <el-card v-loading="ACLoad" class="ac-card">
+        <template #header>
+          <el-row class="card-header">
+            <el-col :span="3">
+              <span style="line-height: 40px">账号角色</span>
+            </el-col>
+            <el-col :span="7" :offset="5">
+              <el-select v-model="role"  placeholder="Select">
+                <el-option
+                  v-for="item in roles"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                  :disabled="item.disabled"
+                />
+              </el-select>
+            </el-col>
+            <el-col :span="4" :offset="4">
+              <el-button class="button" size="small"
+                         type="success"
+                         @click="addRole($event)"
+                         style="width: 32px;height: 32px; padding: 0;font-size: 26px"
+              >
+                <el-icon><CirclePlus/></el-icon>
+              </el-button>
+            </el-col>
+          </el-row>
+        </template>
+        <el-table :data="accountRoleList"
+                  height="250"
+                  stripe
+                  max-height="400px"
+                  style="width: 100%">
+          <el-table-column prop="id" align="center" label="编号" />
+          <el-table-column prop="name" align="center" label="角色"  />
+          <el-table-column align="center" label="" width="100" >
+            <template #default="scope">
+              <el-button style="width: 32px; height: 32px;padding: 0;font-size: 26px"
+                         size="small" type="danger"
+                         round
+                         @click="deleteEmployeeRole(scope.$index, $event)"
+              >
+                <el-icon><CircleClose/></el-icon>
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
+
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import HelloWorld from '@/components/HelloWorld'
 
-import { Search } from '@element-plus/icons'
+import { Search, UserFilled } from '@element-plus/icons'
 import { requestEmployeeDateAPI, getEmployeeRecommend } from '@/api/search'
-import { Picture, Avatar, MoreFilled, OfficeBuilding, Suitcase, CloseBold } from '@element-plus/icons'
+import { Picture, Avatar, MoreFilled, OfficeBuilding, Warning,
+  Suitcase, CloseBold, CirclePlus, CircleClose } from '@element-plus/icons'
 import { getEmployeeInfoAPI, getEmployeePositionAPI,
   deleteEmployeePositionAPI, addEmployeePositionAPI, getEmployeeAllocateHistory } from '@/api/employee'
 import { getAllBasicAPI } from '@/api/department'
 import { getAllBasicByDepartmentIdAPI } from '@/api/position'
+import { getAllRoleAPI, getEmployeeRoleAPI, addEmployeeRoleAPI, removeEmployeeRoleAPI } from '@/api/role'
 
 export default {
   name: 'SearchEmployeeView',
   components: {
+    UserFilled,
     Search,
     Picture,
     Avatar,
     MoreFilled,
     OfficeBuilding,
     Suitcase,
-    CloseBold
+    CloseBold,
+    CirclePlus,
+    CircleClose,
+    Warning
   },
   data () {
     return {
+      baseUrl: "http://127.0.0.1:8088/api/",
+      ACLoad: false,
+      openACDialog: false,
       openAllocateDialog: false,
       allocateLoad: false,
       openInfoDialog: false,
@@ -396,6 +480,7 @@ export default {
       mEndDate: null,
       phone: "",
       email: "",
+      avatar: "",
       history: [],
       departmentPositionList: [],
       //调度信息
@@ -403,6 +488,10 @@ export default {
       position: null,
       departments: [],
       positions: [],
+      //账号控制信息
+      roles: [],
+      role: null,
+      accountRoleList: [],
     }
   },
   methods: {
@@ -434,6 +523,7 @@ export default {
       this.email = ""
       this.departmentPositionList = []
       this.history = []
+      this.avatar = ""
     },
     setInfo(profile) {
       this.username = profile.username
@@ -443,6 +533,7 @@ export default {
       this.mEndDate = profile.endDate
       this.phone = profile.phone
       this.email = profile.email
+      this.avatar = profile.avatar
     }
     ,
     myBlur(event) {
@@ -451,6 +542,118 @@ export default {
         tar = tar.parentNode
       }
       tar.blur()
+    },
+    setRoleDisabledStatus(id, p) {
+      for (let index in this.roles) {
+        if (this.roles[index].value === id) {
+          this.roles[index].disabled = p
+          return;
+        }
+      }
+    },
+    getRole(id) {
+      for (let index in this.roles) {
+        if (this.roles[index].value === id) {
+          return this.roles[index]
+        }
+      }
+      return null
+    },
+    addRole(event) {
+      this.myBlur(event)
+      addEmployeeRoleAPI(this.id, this.role).then (
+        (res) => {
+          if(res.data.success) {
+            let r = this.getRole(this.role)
+            this.accountRoleList.push(
+              {
+                id: r.value,
+                name: r.label,
+                key: r.key
+              }
+            )
+            this.setRoleDisabledStatus(this.role, true)
+            this.role = null
+          }else {
+            this.$message.error(res.data.message)
+          }
+        }
+      ).catch(
+        (err) => {
+          this.$message.error(err.message)
+        }
+      )
+    },
+    deleteEmployeeRole(index, event) {
+      this.myBlur(event)
+      let r = this.accountRoleList[index]
+      removeEmployeeRoleAPI(this.id, r.id).then (
+        (res) => {
+          if(res.data.success) {
+            this.setRoleDisabledStatus(r.id, false)
+            this.accountRoleList.splice(index, 1)
+          }else {
+            this.$message.error(res.data.message)
+          }
+        }
+      ).catch(
+        (err) => {
+          this.$message.error(err.message)
+        }
+      )
+    },
+    isExistRole(id) {
+      for (let index in this.accountRoleList) {
+        if (this.accountRoleList[index].id === id)
+          return true;
+      }
+      return false;
+    },
+    controlAccount(index, event) {
+      this.myBlur(event)
+      this.openACDialog = true
+      this.ACLoad = true
+      this.clearInfo()
+      this.roles = []
+      this.accountRoleList = []
+      this.role = null
+      let data = this.tableData[index]
+      this.id = data.id
+      this.username = data.name
+      getEmployeeRoleAPI(this.id).then(
+        (res) => {
+          if (res.data.success) {
+            console.log(res.data.data)
+            this.accountRoleList = res.data.data
+            getAllRoleAPI().then(
+              (res) => {
+                if (res.data.success) {
+                  let data = res.data.data
+                  for (let index in data) {
+                    this.roles.push(
+                      {
+                        value: data[index].id,
+                        label: data[index].name,
+                        key: data[index].key,
+                        disabled: this.isExistRole(data[index].id)
+                      }
+                    )
+                  }
+                  this.ACLoad = false
+                }else {
+                  this.$message.error(res.data.message)
+                }
+              }
+            )
+          }else {
+            this.$message.error(res.data.message)
+          }
+        }
+      ).catch(
+        (err) => {
+          this.$message.error(err.message)
+        }
+      )
     },
     allocate(index, event) {
       this.myBlur(event)
@@ -497,7 +700,6 @@ export default {
         (err) => {
           this.$message.error(err.message)
         }
-      ).finally(
       )
     },
     isExist(id) {
@@ -655,6 +857,7 @@ export default {
             this.totalSize = data.totalNum
             this.mainLoading = false
             this.tableData = []
+            //console.log(data)
             for (let i = 0; i < data.employeeList.length; ++i){
               this.tableData.push(
                 {
@@ -663,6 +866,7 @@ export default {
                   startDate: data.employeeList[i].startDate,
                   endDate: data.employeeList[i].endDate,
                   sex: data.employeeList[i].sex === 0 ? "男" : "女",
+                  status: data.employeeList[i].status
                 }
               )
             }

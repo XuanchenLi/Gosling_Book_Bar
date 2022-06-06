@@ -41,7 +41,7 @@ public class SearchEmployeeServiceImpl implements SearchEmployeeService {
         LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(Employee::getId, Employee::getUsername,
                 Employee::getSex, Employee::getStartDate,
-                Employee::getEndDate)
+                Employee::getEndDate, Employee::getStatus)
                 .ge(Objects.nonNull(bag.getStartDate()),
                         Employee::getStartDate, bag.getStartDate())
                 .le(Objects.nonNull(bag.getEndDate()),

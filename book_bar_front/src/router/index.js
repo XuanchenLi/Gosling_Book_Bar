@@ -9,7 +9,8 @@ import AuthView from '@/views/AuthView'
 import DeparmentView from '@/views/DepartmentView'
 import ProfitView from '@/views/ProfitView'
 import SalaryView from '@/views/SalaryView'
-import AccountControlView from '@/views/AccountControlView'
+import PersonalSalaryView from '@/views/PersonalSalaryView'
+
 
 const routes = [
   {
@@ -76,15 +77,16 @@ const routes = [
         }
       },
       {
-        path: 'accountControl',
-        name: 'accountControl',
-        component: AccountControlView,
+        path: 'personalSalary',
+        name: 'personalSalary',
+        component: PersonalSalaryView,
         meta: {
           requireAuth: true
         }
       },
     ]
-  }
+  },
+
 ]
 
 const router = createRouter({

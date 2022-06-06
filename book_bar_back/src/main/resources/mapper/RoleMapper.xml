@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dazzle.book_bar_back.dao.mapper.RoleMapper">
+    <insert id="insertEmployeeRole">
+        INSERT sys_employee_role
+        VALUES (#{eId}, #{rId})
+    </insert>
+    <insert id="insertRoleMenu">
+        INSERT sys_role_menu
+        VALUES (#{rId}, #{mId})
+    </insert>
+    <delete id="deleteEmployeeRole">
+        DELETE FROM sys_employee_role
+        WHERE
+            employee_id = #{eId}
+            AND role_id = #{rId}
+    </delete>
+    <delete id="removeRoleMenu">
+        DELETE FROM sys_role_menu
+        WHERE
+            role_id = #{rId}
+            AND menu_id = #{mId}
+    </delete>
+
+    <select id="selectEmployeeRole" resultType="com.dazzle.book_bar_back.dao.entity.Role">
+        SELECT r.id id, r.name name, r.role_key roleKey
+        FROM sys_employee_role AS er
+        LEFT JOIN sys_role AS r ON r.id = er.role_id
+        WHERE er.employee_id = #{id}
+        AND r.del_flag = 0
+    </select>
+    <select id="selectRoleMenuById" resultType="com.dazzle.book_bar_back.dao.entity.Menu">
+        SELECT m.id, m.menu_name, m.path, m.perm
+
+        FROM
+            sys_role_menu as rm
+            LEFT JOIN sys_menu m ON m.`id` = rm.`menu_id`
+        WHERE
+            rm.role_id = #{id}
+            AND m.`del_flag` = 0
+        ORDER BY m.menu_name
+    </select>
+    <select id="selectRestRoleMenu" resultType="com.dazzle.book_bar_back.dao.entity.Menu">
+        SELECT m.id, m.menu_name, m.path, m.perm
+        FROM
+            sys_menu as m
+        WHERE
+            m.`del_flag` = 0
+            AND m.id NOT IN
+                (
+                    SELECT m.id
+                    FROM
+                        sys_role_menu as rm
+                        LEFT JOIN sys_menu as m ON m.`id` = rm.`menu_id`
+                    WHERE
+                        rm.role_id = #{id}
+                        AND m.`del_flag` = 0
+                )
+        ORDER BY m.menu_name
+
+    </select>
+</mapper>

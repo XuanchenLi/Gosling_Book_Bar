@@ -7,6 +7,7 @@ import com.dazzle.book_bar_back.dao.entity.Position;
 import com.dazzle.book_bar_back.response.ResponseResult;
 import com.dazzle.book_bar_back.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,18 +26,20 @@ public class PositionController {
     private PositionService positionService;
 
     @GetMapping("/position/all_basic_{departmentId}")
+    @PreAuthorize("hasAuthority('position::list')")
     @ResponseResult
     public List<Position>
     getAllBasicByDepartmentId(@PathVariable("departmentId") Long id) {
         return positionService.selectBasicByDepartmentId(id);
     }
     @GetMapping("/position/delete_{id}")
+    @PreAuthorize("hasAuthority('position::delete')")
     @ResponseResult
     public int deletePositionById(@PathVariable("id") Long id) {
-
         return positionService.deleteById(id);
     }
     @PostMapping("/position/update_{id}")
+    @PreAuthorize("hasAnyAuthority('position::update', 'position::add')")
     @ResponseResult
     public boolean updateById(@PathVariable("id") Long id, @RequestBody Position position) {
         LambdaUpdateWrapper<Position> wrapper = new LambdaUpdateWrapper<>();
@@ -46,12 +49,14 @@ public class PositionController {
         return positionService.update(wrapper);
     }
     @GetMapping("/position/get_info_{id}")
+    @PreAuthorize("hasAuthority('position::list')")
     @ResponseResult
     public Position getPositionById(@PathVariable("id") Long id) {
         return positionService.getById(id);
     }
 
     @PostMapping("/position/save_or_update")
+    @PreAuthorize("hasAuthority('position::add')")
     @ResponseResult
     public boolean updateOrSave(@RequestBody Position position) {
         return positionService.saveOrUpdate(position);
