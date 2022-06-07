@@ -22,7 +22,9 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="viewProfile">修改个人信息</el-dropdown-item>
+                <!--
                 <el-dropdown-item>修改密码</el-dropdown-item>
+                -->
                 <el-dropdown-item @click="logout();">退出账户</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -50,11 +52,13 @@
               <template #title>
                 <el-icon><money /></el-icon>&ensp;财务系统
               </template>
+              <!--
               <el-menu-item-group>
                 <template #title>财务统计</template>
                 <el-menu-item index="/home/profit">盈利统计</el-menu-item>
                 <el-menu-item index="/home/salary">薪资统计</el-menu-item>
               </el-menu-item-group>
+              -->
               <el-menu-item-group title="员工工资">
                 <el-menu-item index="/home/personalSalary">薪资查询</el-menu-item>
               </el-menu-item-group>
@@ -218,9 +222,10 @@ export default {
   methods: {
     handleAvatarSuccess(res, file) {
       // 这句话就是连接后台服务器的
+      console.log(res)
       if (res.success) {
-        this.profileForm.avatar = res.data.data
-        this.profileForm.avatar = URL.createObjectURL(file.raw)
+        this.profileForm.avatar = res.data
+        //this.profileForm.avatar = URL.createObjectURL(file.raw)
 
         console.log("handleAvatarSuccess", this.profileForm.avatar)
       }else {

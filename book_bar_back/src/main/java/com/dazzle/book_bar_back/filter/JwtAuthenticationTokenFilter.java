@@ -42,6 +42,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             return;
         }
         String token = request.getHeader("Authorization");
+        logger.info(token);
         String path = request.getServletPath();
         if (path.equals("/employee/login")) {
             filterChain.doFilter(request, response);
@@ -54,7 +55,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
         String userId;
         try {
-            logger.info(token);
+            //logger.info(token);
             Claims claims = JWTUtil.parseJWT(token);
             userId = claims.getSubject();
         } catch (Exception e){

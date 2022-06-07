@@ -49,7 +49,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 // 对于登录接口 允许匿名访问
-                .antMatchers("/employee/login", "/druid/**", "/employee/register").permitAll()
+                .antMatchers("/employee/login", "/druid/**", "/employee/register", "/static/uploads/**").permitAll()
                 .anyRequest().authenticated();
 
         //把token校验过滤器添加到过滤器链中

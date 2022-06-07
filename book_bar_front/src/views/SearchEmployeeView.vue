@@ -894,7 +894,13 @@ export default {
       this.requestData()
     },
     getRecommend(queryString, cb){
+
       let results = []
+      console.log(this.regionSelect)
+      if (parseInt(this.regionSelect) === 1) {
+        cb(results)
+        return
+      }
       if (this.regionSelect === 1 || this.searchInput === "" || this.searchInput === null)
         cb(results)
       const searchBag = {
@@ -913,7 +919,7 @@ export default {
             for (let i = 0; i < data.length; ++i) {
               results.push({ value: data[i], address: ""})
             }
-            console.log(results)
+            //console.log(results)
             results = queryString
               ? results.filter(this.createFilter(queryString))
               : results;

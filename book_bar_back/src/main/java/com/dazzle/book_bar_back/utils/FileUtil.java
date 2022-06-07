@@ -1,5 +1,6 @@
 package com.dazzle.book_bar_back.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,8 +16,9 @@ import java.io.IOException;
  * Version V1.0
  */
 @Component
+@Slf4j
 public class FileUtil {
-
+    public final static String AVATAR_PATH = "static/uploads/image/employee/avatars/";
     public String uploadFile(MultipartFile file, String basePath) throws Exception
     {
         if (file.isEmpty()) {
@@ -38,7 +40,7 @@ public class FileUtil {
             String uploadPath = upload + "\\";
 
             file.transferTo(new File(uploadPath + fileName));
-            return uploadPath + fileName;
+            return basePath + fileName;
         }catch (Exception e)
         {
             throw new Exception();
