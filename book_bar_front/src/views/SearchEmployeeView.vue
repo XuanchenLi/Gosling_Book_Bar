@@ -95,12 +95,18 @@
           <el-table-column prop="sex" align="center" label="性别"  />
           <el-table-column prop="startDate" align="center" label="入职日期"  />
           <el-table-column prop="endDate" align="center" label="离职日期"  />
-          <el-table-column align="center" label="操作" width="300px" >
+          <el-table-column align="center" label="操作" width="200px" >
             <template #default="scope">
+              <el-row style="margin-bottom: 5px">
               <el-button size="small" type="warning" :disabled="this.tableData[scope.$index].status !== 0"
                          @click="allocate(scope.$index, $event)">岗位调度</el-button>
+              <el-button size="small" type="info" :disabled="this.tableData[scope.$index].status !== 0"
+                         @click="setSalary(scope.$index, $event)">薪资设置</el-button>
+              </el-row>
+              <el-row>
               <el-button size="small" type="primary" @click="viewInfo(scope.$index, $event)">查看信息</el-button>
               <el-button size="small" type="success" @click="controlAccount(scope.$index, $event)">账号控制</el-button>
+              </el-row>
             </template>
           </el-table-column>
         </el-table>
@@ -400,6 +406,119 @@
       </el-card>
 
     </el-dialog>
+    <el-dialog v-model="openSalaryDailog" title="薪资设置" width="70%">
+      <el-row style="margin-bottom: 20px">
+        <el-col  :span="12" class="info" >
+          <div>
+            <el-row>
+              <h2 style="float:left;">账户名：{{this.username}}</h2>
+            </el-row>
+            <el-row>
+              <h3 >编号：{{this.salaryForm.employeeId}}</h3>
+            </el-row>
+          </div>
+        </el-col>
+      </el-row>
+      <el-form v-loading="salaryLoad" :model="salaryForm" :rules="salaryRules" ref="salaryForm">
+        <el-descriptions
+          title="当前薪资"
+          :column="6"
+          border
+          direction="vertical"
+        >
+          <el-descriptions-item label-align="right" align="center">
+            <template #label>
+              <div class="cell-item">
+                基础工资
+              </div>
+            </template>
+            <el-form-item prop="basePay">
+              <el-input-number  v-model="salaryForm.basePay"
+                                :min="0" :max="9999999" :precision="2"
+                                autocomplete="off"
+                                size="small"
+                                controls-position="right"
+              ></el-input-number>
+            </el-form-item>
+          </el-descriptions-item>
+          <el-descriptions-item label-align="right" align="center">
+            <template #label>
+              <div class="cell-item">
+                绩效奖金
+              </div>
+            </template>
+            <el-form-item prop="meritPay">
+              <el-input-number v-model="salaryForm.meritPay" :min="0"
+                               :max="9999999"
+                               :precision="2" autocomplete="off"
+                               size="small"
+                               controls-position="right"
+              ></el-input-number>
+            </el-form-item>
+          </el-descriptions-item >
+          <el-descriptions-item label-align="right" align="center">
+            <template #label>
+              <div class="cell-item">
+                补贴
+              </div>
+            </template>
+            <el-form-item prop="subsidyPay" label-align="right" align="center">
+              <el-input-number v-model="salaryForm.subsidyPay" :min="0"
+                               :max="9999999"
+                               :precision="2" autocomplete="off"
+                               size="small"
+                               controls-position="right"
+              ></el-input-number>
+            </el-form-item>
+          </el-descriptions-item>
+          <el-descriptions-item label-align="right" align="center">
+            <template #label>
+              <div class="cell-item">
+                加班费
+              </div>
+            </template>
+            <el-form-item prop="overtimePay">
+              <el-input-number v-model="salaryForm.overtimePay" :min="0"
+                               :max="9999999" :precision="2"
+                               autocomplete="off"
+                               size="small"
+                               controls-position="right"
+              ></el-input-number>
+            </el-form-item>
+          </el-descriptions-item>
+          <el-descriptions-item label-align="right" align="center">
+            <template #label>
+              <div class="cell-item">
+                保险
+              </div>
+            </template>
+            <el-form-item prop="insurancePay">
+              <el-input-number v-model="salaryForm.insurancePay" :min="-9999999"
+                               :max="0" :precision="2"
+                               autocomplete="off"
+                               size="small"
+                               controls-position="right"
+              ></el-input-number>
+            </el-form-item>
+          </el-descriptions-item>
+          <el-descriptions-item label-align="right" align="center">
+            <template #label>
+              <div class="cell-item">
+                实发工资
+              </div>
+            </template>
+            <span style="line-height: 40px">{{this.salaryForm.basePay + this.salaryForm.insurancePay + this.salaryForm.meritPay
+            + this.salaryForm.overtimePay + this.salaryForm.subsidyPay }}</span>
+          </el-descriptions-item>
+        </el-descriptions>
+      </el-form>
+      <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="submitForm('salaryForm')">确定</el-button>
+        <el-button @click="closeForm('salaryForm')">返回</el-button>
+      </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -415,6 +534,7 @@ import { getEmployeeInfoAPI, getEmployeePositionAPI,
 import { getAllBasicAPI } from '@/api/department'
 import { getAllBasicByDepartmentIdAPI } from '@/api/position'
 import { getAllRoleAPI, getEmployeeRoleAPI, addEmployeeRoleAPI, removeEmployeeRoleAPI } from '@/api/role'
+import { getSalaryByEmployeeIdAPI, setSalaryAPI } from '@/api/salary'
 
 export default {
   name: 'SearchEmployeeView',
@@ -434,6 +554,8 @@ export default {
   data () {
     return {
       baseUrl: "http://127.0.0.1:8088/api/",
+      openSalaryDailog: false,
+      salaryLoad: false,
       ACLoad: false,
       openACDialog: false,
       openAllocateDialog: false,
@@ -492,9 +614,72 @@ export default {
       roles: [],
       role: null,
       accountRoleList: [],
+      salaryForm: {
+        id: null,
+        employeeId: 0,
+        basePay: 0,
+        insurancePay: 0,
+        meritPay: 0,
+        subsidyPay: 0,
+        overtimePay: 0,
+      },
+      salaryRules: {
+        basePay: [
+          { type: 'number', require: true, trigger: 'blur' }
+        ],
+        insurancePay: [
+          { type: 'number', require: true, trigger: 'blur' }
+        ],
+        meritPay: [
+          { type: 'number', require: true, trigger: 'blur' }
+        ],
+        subsidyPay: [
+          { type: 'number', require: true, trigger: 'blur' }
+        ],
+        overtimePay: [
+          { type: 'number', require: true, trigger: 'blur' }
+        ]
+      },
+
     }
   },
   methods: {
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (formName === "salaryForm") {
+            setSalaryAPI(this.salaryForm).then(
+              (res) => {
+                if (res.data.success) {
+                  this.$message.success("设置成功")
+                } else {
+                  this.$message.error(res.data.message)
+                }
+              }
+            ).catch(
+              (err) => {
+                this.$message.error(err.message)
+              }
+            )
+          }
+        }
+      })
+    },
+    resetSalary() {
+      this.salaryForm.id = null
+      this.salaryForm.basePay = 0
+      this.salaryForm.employeeId = 0
+      this.salaryForm.insurancePay = 0
+      this.salaryForm.overtimePay = 0
+      this.salaryForm.meritPay = 0
+      this.salaryForm.subsidyPay = 0
+    },
+    closeForm(formName) {
+      if (formName === "salaryForm") {
+        this.resetSalary()
+        this.openSalaryDailog = false
+      }
+    },
     deleteEmployeePosition(index, event) {
       this.myBlur(event)
       let position = this.departmentPositionList[index]
@@ -655,6 +840,42 @@ export default {
         }
       )
     },
+    setSalary(index, event) {
+      this.myBlur(event)
+      this.openSalaryDailog = true
+      this.salaryLoad = true
+      this.clearInfo()
+      let data2 = this.tableData[index]
+      this.salaryForm.employeeId = data2.id
+      this.username = data2.name
+      getSalaryByEmployeeIdAPI(this.salaryForm.employeeId).then(
+        (res) => {
+          if (res.data.success) {
+            let data = res.data.data
+            if (data !== null) {
+              //console.log(data)
+              this.salaryForm.id = data['id']
+              this.salaryForm.overtimePay = data['overtimePay']
+              this.salaryForm.basePay = data['basePay']
+              this.salaryForm.meritPay = data['meritPay']
+              this.salaryForm.subsidyPay = data['subsidyPay']
+              this.salaryForm.insurancePay = data['insurancePay']
+            }else {
+              this.resetSalary()
+              this.salaryForm.employeeId = data2.id
+            }
+            this.salaryLoad = false
+          }else {
+            this.$message.error(res.data.message)
+          }
+        }
+      ).catch(
+        (err) => {
+          this.$message.error(err.message)
+        }
+      )
+    },
+
     allocate(index, event) {
       this.myBlur(event)
       this.department = null
@@ -989,7 +1210,7 @@ export default {
 .main-table {
   width: 90%;
   margin-left: 5%;
-  height: 640px;
+  height: 990px;
 }
 .pagination-block + .pagination-block {
   margin-top: 10px;

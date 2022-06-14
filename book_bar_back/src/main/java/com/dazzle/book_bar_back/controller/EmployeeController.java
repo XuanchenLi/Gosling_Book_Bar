@@ -7,6 +7,7 @@ import com.dazzle.book_bar_back.controller.response.AllocateHistoryResponse;
 import com.dazzle.book_bar_back.dao.entity.*;
 import com.dazzle.book_bar_back.response.ResponseResult;
 import com.dazzle.book_bar_back.service.EmployeeService;
+import com.dazzle.book_bar_back.service.SalaryService;
 import com.dazzle.book_bar_back.utils.Constants;
 import com.dazzle.book_bar_back.utils.FileUtil;
 import com.dazzle.book_bar_back.utils.RedisUtil;
@@ -30,6 +31,8 @@ import java.util.List;
 public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private SalaryService salaryService;
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
@@ -75,7 +78,12 @@ public class EmployeeController {
     @PreAuthorize("hasAuthority('employee::delete')")
     @ResponseResult
     public boolean deleteEmployee(@PathVariable("id") Long id) {
-        return employeeService.removeById(id);
+        if (employeeService.removeById(id)) {
+            LambdaQueryWrapper<Salary> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Salary::getEmployeeId, id);
+            return salaryService.remove(wrapper);
+        }
+        return false;
     }
 
     @GetMapping("/employee/profile")

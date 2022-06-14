@@ -92,13 +92,14 @@
           </el-descriptions>
 
         </el-row>
+        <el-button style="float:right; margin-top: 10px" type="primary" @click="viewPie($event)">查看分布</el-button>
         <el-row>
           <el-col>
             <h3 style="float: left;">薪资发放历史查询</h3>
           </el-col>
         </el-row>
         <el-row class="time-block row-bg" >
-          <el-col :span="5">
+          <el-col :span="2">
             <span style="line-height: 40px; float: right; ">发放日期:</span>
           </el-col>
           <el-col :span="6" style="margin-left: 2%;">
@@ -107,6 +108,7 @@
                 v-model="startDate"
                 type="date"
                 placeholder="Pick a day"
+                @change="this.requestData"
               />
             </div>
           </el-col>
@@ -119,6 +121,7 @@
                 v-model="endDate"
                 type="date"
                 placeholder="Pick a day"
+                @change="this.requestData"
               />
             </div>
           </el-col>
@@ -132,6 +135,9 @@
               打印
             </el-button>
           </el-col>
+          <el-col :span="3" >
+            <el-button style="margin-left: 20px" type="success" @click="viewLine($event)" >查看走势</el-button>
+          </el-col>
         </el-row>
         <el-row>
           <el-table
@@ -143,6 +149,7 @@
             border
             default-expand-all
             max-height="500px"
+            height="500px"
             ref="history"
             id="history"
           >
@@ -158,13 +165,20 @@
         </el-row>
       </el-main>
     </el-container>
+    <el-dialog v-model="openPie" :width="800" title="薪资分布">
+      <div id="pie" style="width: 800px;height:400px;"></div>
+    </el-dialog>
+    <el-dialog v-model="openLine" :width="850" title="薪资走势">
+      <div id="line" style="width: 800px;height:600px;"></div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getPersonalSalaryAPI, getSalaryRecord } from '@/api/salary'
+import { getPersonalSalaryAPI, getSalaryRecordAPI } from '@/api/salary'
 import { getEmployeeInfoAPI } from '@/api/employee'
 import htmlToPDF from '@/utils/htmlToPDF'
+import * as echarts from 'echarts'
 
 export default {
   name: 'PersonalSalaryView',
@@ -173,6 +187,8 @@ export default {
   },
   data () {
     return {
+      openLine: false,
+      openPie: false,
       notPrint: true,
       mainLoad: false,
       startDate: null,
@@ -194,6 +210,129 @@ export default {
     }
   },
   methods: {
+    viewLine(event) {
+      this.myBlur(event)
+      this.openLine = true
+      this.$nextTick(() => {
+        var lineChart = echarts.init(document.getElementById('line'))
+        var option = {
+          xAxis: {
+            data: this.salaryTable.map(
+              item => {
+                return item.payTime.substring(0, item.payTime.indexOf(" "))
+              }
+            ).reverse()
+          },
+          legend: {
+            orient: 'vertical',
+            x: 'right',
+            data: ['基础工资', '绩效奖金', '补贴', '加班费', '保险', '实发工资']
+          },
+          tooltip: {
+            trigger: 'item'
+          },
+          yAxis: {},
+          series: [
+            {
+              data: this.salaryTable.map(item => {return item.basePay}).reverse(),
+              type: 'line',
+              name: "基础工资"
+            },
+            {
+              data: this.salaryTable.map(item => {return item.meritPay}).reverse(),
+              type: 'line',
+              name: "绩效奖金"
+            },
+            {
+              data: this.salaryTable.map(item => {return item.subsidyPay}).reverse(),
+              type: 'line',
+              name: "补贴"
+            },
+            {
+              data: this.salaryTable.map(item => {return item.overtimePay}).reverse(),
+              type: 'line',
+              name: "加班费"
+            },
+            {
+              data: this.salaryTable.map(item => {return item.insurancePay}).reverse(),
+              type: 'line',
+              name: "保险",
+            },
+            {
+              data: this.salaryTable.map(item => {return item.sumPay}).reverse(),
+              type: 'line',
+              name: "实发工资",
+              label: {
+                show: true,
+                position: 'top',
+                textStyle: {
+                  fontSize: 15
+                }
+              }
+            }
+          ]
+        }
+        //console.log(option.xAxis.data)
+        lineChart.setOption(option)
+      })
+    },
+    viewPie(event) {
+      this.myBlur(event)
+      this.openPie = true
+      this.$nextTick(() => {
+        var pieChart = echarts.init(document.getElementById('pie'))
+        var option = {
+          legend: {
+            orient: 'vertical',
+            x: 'left',
+            data: ['基础工资', '绩效奖金', '补贴', '加班费', '保险']
+          },
+          tooltip: {
+            trigger: 'item'
+          },
+          series: [
+            {
+              type: 'pie',
+              radius: ['35%', '95%'],
+              label: {
+                show: false,
+                fontSize:18,
+                position: 'center',
+                formatter: '{b}\n{d}%',
+                emphasis: {
+                  show: true
+                }
+              },
+              avoidLabelOverlap: false,
+              stillShowZeroSum: false,
+              data: [
+                {
+                  value: this.salary.basePay === 0 ? null : this.salary.basePay,
+                  name: "基础工资"
+                },
+                {
+                  value: this.salary.meritPay === 0 ? null : this.salary.meritPay,
+                  name: "绩效奖金"
+                },
+                {
+                  value: this.salary.subsidyPay === 0 ? null : this.salary.subsidyPay,
+                  name: "补贴"
+                },
+                {
+                  value: this.salary.overtimePay === 0 ? null : this.salary.overtimePay,
+                  name: "加班费"
+                },
+                {
+                  value: -this.salary.insurancePay === 0 ? null : -this.salary.insurancePay,
+                  name: "保险"
+                },
+              ]
+            }
+          ]
+        }
+        pieChart.setOption(option)
+      })
+    },
     myBlur(event) {
       let tar = event.target
       while (tar.nodeName !== "BUTTON") {
@@ -204,6 +343,7 @@ export default {
     clearDate() {
       this.startDate = null
       this.endDate = null
+      this.requestData()
     },
     savePdf(refName, event){
       this.myBlur(event)
@@ -219,6 +359,26 @@ export default {
           this.notPrint = true
       }, 500)
     },
+    requestData() {
+      const pack = {
+        startDate: this.startDate,
+        endDare: this.endDate
+      }
+      getSalaryRecordAPI(pack).then(
+        (res) => {
+          if(res.data.success) {
+            this.salaryTable = res.data.data
+            this.mainLoad = false
+          }else {
+            this.$message.error(res.data.message)
+          }
+        }
+      ).catch(
+        (err) => {
+          this.$message.error(err.message)
+        }
+      )
+    }
   },
   mounted () {
     this.mainLoad = true
@@ -247,24 +407,7 @@ export default {
         this.$message.error(err.message)
       }
     )
-    const pack = {
-      startDate: null,
-      endDare: null
-    }
-    getSalaryRecord(pack).then(
-      (res) => {
-        if(res.data.success) {
-          this.salaryTable = res.data.data
-          this.mainLoad = false
-        }else {
-          this.$message.error(res.data.message)
-        }
-      }
-    ).catch(
-      (err) => {
-        this.$message.error(err.message)
-      }
-    )
+    this.requestData()
   }
 }
 </script>
@@ -274,7 +417,7 @@ export default {
   background-color: #f3f4f7;
   width: 86%;
   margin-left: 14%;
-  height: 600px;
+  height: auto;
   float: right;
   margin-top: 40px;
   margin-right: 0;

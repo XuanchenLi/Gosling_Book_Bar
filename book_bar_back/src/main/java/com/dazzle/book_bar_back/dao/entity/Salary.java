@@ -1,6 +1,7 @@
 package com.dazzle.book_bar_back.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,4 +29,6 @@ public class Salary implements Serializable {
     private double meritPay;
     private double subsidyPay;
     private double overtimePay;
+    @TableLogic
+    private int delFlag;
 }

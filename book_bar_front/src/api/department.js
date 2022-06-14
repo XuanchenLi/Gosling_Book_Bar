@@ -21,3 +21,7 @@ export function updateDepartmentAPI(id, data) {
 export function saveOrUpdateDepartmentAPI(data) {
   return http.post(`${request}/department/save_or_update`, data)
 }
+
+export function getDepartmentStatsAPI() {
+  return http.get(`${request}/department/get_num`)
+}

@@ -2,6 +2,7 @@ package com.dazzle.book_bar_back.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dazzle.book_bar_back.controller.response.DepartmentStatsResponse;
 import com.dazzle.book_bar_back.dao.entity.Department;
 import com.dazzle.book_bar_back.dao.mapper.DepartmentMapper;
 import com.dazzle.book_bar_back.service.DepartmentService;
@@ -40,5 +41,11 @@ public class DepartmentServiceImpl
         }
         return res;
     }
+
+    @Override
+    public List<DepartmentStatsResponse> getDepartmentNumber() {
+        return departmentMapper.selectDepartmentStats();
+    }
+
 
 }

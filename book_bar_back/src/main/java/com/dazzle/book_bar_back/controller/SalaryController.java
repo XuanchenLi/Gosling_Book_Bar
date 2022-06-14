@@ -10,6 +10,7 @@ import com.dazzle.book_bar_back.response.ResponseResult;
 import com.dazzle.book_bar_back.service.SalaryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
+import org.apache.log4j.jmx.LayoutDynamicMBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -66,4 +67,14 @@ public class SalaryController {
 
         return salaryService.getSalaryRecord(employee.getEmployee().getId(), pair);
     }
+
+    @GetMapping("/salary/{id}")
+    @ResponseResult
+    @PreAuthorize("hasAuthority('salary::list')")
+    public Salary getSalaryByEmployeeId(@PathVariable("id") Long id) {
+        LambdaQueryWrapper<Salary> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Salary::getEmployeeId, id);
+        return salaryService.getOne(wrapper);
+    }
+
 }

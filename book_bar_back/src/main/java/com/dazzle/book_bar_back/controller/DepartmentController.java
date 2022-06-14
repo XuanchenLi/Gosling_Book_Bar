@@ -2,6 +2,7 @@ package com.dazzle.book_bar_back.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.dazzle.book_bar_back.controller.response.DepartmentStatsResponse;
 import com.dazzle.book_bar_back.dao.entity.Department;
 import com.dazzle.book_bar_back.dao.entity.Position;
 import com.dazzle.book_bar_back.response.ResponseResult;
@@ -70,5 +71,12 @@ public class DepartmentController {
     @ResponseResult
     public boolean updateOrSave(@RequestBody Department department) {
         return departmentService.saveOrUpdate(department);
+    }
+
+    @GetMapping("/department/get_num")
+    @PreAuthorize("hasAuthority('department::stats')")
+    @ResponseResult
+    public List<DepartmentStatsResponse> getDepartmentNumber() {
+        return departmentService.getDepartmentNumber();
     }
 }

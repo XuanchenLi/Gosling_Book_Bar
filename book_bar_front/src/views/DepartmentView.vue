@@ -110,7 +110,6 @@
       <span class="dialog-footer">
         <el-button type="primary" @click="submitForm('depForm')">确定</el-button>
         <el-button @click="closeForm('depForm')">返回</el-button>
-
       </span>
       </template>
     </el-dialog>

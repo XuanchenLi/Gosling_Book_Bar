@@ -10,6 +10,7 @@ import DeparmentView from '@/views/DepartmentView'
 import ProfitView from '@/views/ProfitView'
 import SalaryView from '@/views/SalaryView'
 import PersonalSalaryView from '@/views/PersonalSalaryView'
+import BookSaleView from '@/views/BookSaleView'
 
 
 const routes = [
@@ -61,9 +62,9 @@ const routes = [
         }
       },
       {
-        path: 'profit',
-        name: 'profit',
-        component: ProfitView,
+        path: 'bookSale',
+        name: 'bookSale',
+        component: BookSaleView,
         meta: {
           requireAuth: true
         }

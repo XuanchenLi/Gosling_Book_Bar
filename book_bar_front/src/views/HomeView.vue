@@ -43,22 +43,20 @@
                    :router="true">
             <el-submenu index="1">
               <template #title>
-                <el-icon><user /></el-icon>&ensp;员工管理
+                <el-icon><user /></el-icon>&ensp;人事系统
               </template>
               <el-menu-item index="/home/searchEmployee">员工管理</el-menu-item>
               <el-menu-item index="/home/department">部门管理</el-menu-item>
             </el-submenu>
             <el-submenu index="2">
               <template #title>
-                <el-icon><money /></el-icon>&ensp;财务系统
+                <el-icon><money /></el-icon>&ensp;报表统计
               </template>
-              <!--
               <el-menu-item-group>
                 <template #title>财务统计</template>
-                <el-menu-item index="/home/profit">盈利统计</el-menu-item>
-                <el-menu-item index="/home/salary">薪资统计</el-menu-item>
+                <el-menu-item index="/home/bookSale">书籍销售统计</el-menu-item>
+                <el-menu-item index="/home/salary">部门薪资统计</el-menu-item>
               </el-menu-item-group>
-              -->
               <el-menu-item-group title="员工工资">
                 <el-menu-item index="/home/personalSalary">薪资查询</el-menu-item>
               </el-menu-item-group>
